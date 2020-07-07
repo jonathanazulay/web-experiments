@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./main.css">
+    <script src="./main.js"></script>
+    <style>
+        :root {
+            --background-color: wheat;
+            --foreground-color: black;
+        }
+    </style>
+</head>
+<body>
+    Hello world. How about <a href="page2.html">another page?</a>
+    <p><img width="300" src="https://filmdaily.co/wp-content/uploads/2020/04/cute-cat-videos-lede.jpg"></p>
+    <script>
+        document.addEventListener('mouseover', () => {
+            document.documentElement.style.setProperty('--a-hover-rotation', -20 + Math.random()*40 + 'deg')
+            document.documentElement.style.setProperty('--a-hover-scale', 1 + Math.random())
+        });
+    </script>
+</body>
+</html>

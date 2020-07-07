@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./main.css">
+    <script src="./main.js"></script>
+    <style>
+        :root {
+            --background-color: tomato;
+            --foreground-color: white;
+        }
+    </style>
+</head>
+<body>
+    Hello world. How about <a href="/">that first page you went to?</a>
+    <p><img width="300" src="https://lh3.googleusercontent.com/AmKSpZt_rynhOO0ID1eS0gqeW3DFzoH6KNZkAAgepQ0t9MDRQTmil-nlY5GqkZ_7El0"></p>
+
+    <script>
+        document.addEventListener('mouseover', () => {
+            document.documentElement.style.setProperty('--a-hover-rotation', -20 + Math.random()*40 + 'deg')
+            document.documentElement.style.setProperty('--a-hover-scale', 1 + Math.random())
+        });
+    </script>
+</body>
+</html>
