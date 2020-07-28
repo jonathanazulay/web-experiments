@@ -1,0 +1,8 @@
+:root {
+  --bg-color: khaki;
+}
+
+html, body {
+  margin: 0;
+  background: var(--bg-color);
+}
