@@ -25,14 +25,13 @@
       return s.instance.exports
     })
 
-    const add = wasmExports.then(e => e.add)
+    const add = (n1, n2) => wasmExports.then(e => e.add(n1, n2))
 
     n1.addEventListener('change', handleInputChange)
     n2.addEventListener('change', handleInputChange)
     
     async function handleInputChange () {
-      const adder = await add
-      const newSum = adder(n1.value, n2.value)
+      const newSum = await add(n1.value, n2.value)
       updateSum(newSum)
     }
   </script>
