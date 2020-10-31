@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wasm experiment</title>
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.0.0-alpha2/dist/css/bootstrap.min.css">
+</head>
+
+<body class="p-4">
+  <h1>addition with wasm</h1>
+  <div class="input-group mt-4">
+    <input class="form-control" type="number" value="0" />
+    <span class="input-group-text"> + </span>
+    <input class="form-control" type="number" value="0" />
+    <span class="input-group-text" value="0">=<span class="ml-1 result">0</span></span>
+  </div>
+  <script>
+    const n1 = document.querySelectorAll('input[type=number]')[0]
+    const n2 = document.querySelectorAll('input[type=number]')[1]
+    const updateSum = (newSum) => document.querySelector('.result').textContent = newSum
+
+    const wasmExports = WebAssembly.instantiateStreaming(fetch('./add.wasm')).then(s => {
+      return s.instance.exports
+    })
+
+    const add = wasmExports.then(e => e.add)
+
+    n1.addEventListener('change', handleInputChange)
+    n2.addEventListener('change', handleInputChange)
+    
+    async function handleInputChange () {
+      const adder = await add
+      const newSum = adder(n1.value, n2.value)
+      updateSum(newSum)
+    }
+  </script>
+</body>
+
+</html>
