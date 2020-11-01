@@ -6,10 +6,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>wasm experiment</title>
   <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.0.0-alpha2/dist/css/bootstrap.min.css">
+  <script>
+    const memory = new WebAssembly.Memory({ initial: 1526 })
+    const wasmExports = WebAssembly.instantiateStreaming(
+      fetch('./add.wasm'),
+      {
+        memory: { memory }
+      }
+    ).then(s => {
+      return s.instance.exports
+    })
+  </script>
 </head>
 
-<body class="p-4">
-  <h1>addition with wasm</h1>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">wasm experiments</a>
+    </div>
+  </nav>
+
+  <div class="p-4">
+  <!-- Experiment No.1, adding two numbers -->
+  <h2 class="mt-4">addition</h2>
   <div class="input-group mt-4">
     <input class="form-control" type="number" value="0" />
     <span class="input-group-text"> + </span>
@@ -21,10 +40,6 @@
     const n2 = document.querySelectorAll('input[type=number]')[1]
     const updateSum = (newSum) => document.querySelector('.result').textContent = newSum
 
-    const wasmExports = WebAssembly.instantiateStreaming(fetch('./add.wasm')).then(s => {
-      return s.instance.exports
-    })
-
     const add = (n1, n2) => wasmExports.then(e => e.add(n1, n2))
 
     n1.addEventListener('change', handleInputChange)
@@ -35,6 +50,56 @@
       updateSum(newSum)
     }
   </script>
+
+  <!-- Experiment No.2, rotatingg an image -->
+  <h2 class="mt-5">image processing</h2>
+  <div id="drop-area" style="height: 200px;" class="justify-content-center d-flex align-items-center bg-light border text-primary shadow-sm p-4 text-center">
+    <small>Drop image here</small>
+  </div>
+  <canvas style="width: 100%; height: 100%;" id="canvas"></canvas>
+  <script>
+    const canvas = document.querySelector('#canvas')
+
+    document.querySelector('#drop-area').addEventListener('dragover', function (e) {
+      e.preventDefault()
+    })
+
+    document.querySelector('#drop-area').addEventListener('drop', async function (ev) {
+      ev.preventDefault()
+      if (!ev.dataTransfer.items[0]) { alert('Drop one image at a time please...') }
+      const item = ev.dataTransfer.items[0]
+      handleNewImage(
+        await createImageBitmap(item.getAsFile())
+      )
+    })
+
+    async function handleNewImage (img) {
+      const processImage = (pointer, length) => wasmExports.then(e => e.processImage(pointer, length))
+      canvas.width = img.width
+      canvas.height = img.height
+      let ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0)
+      const imageData = ctx.getImageData(0, 0, img.width, img.height).data
+      const newBuffer = new Uint8ClampedArray(memory.buffer)
+      for (const [key, val] of imageData.entries()) {
+        newBuffer[key] = val
+      }
+      console.log(newBuffer)
+
+      await processImage(0, imageData.byteLength)
+      console.log(newBuffer)
+
+      const processedImage = new ImageData(
+        new Uint8ClampedArray(memory.buffer, 0, imageData.byteLength),
+        img.width,
+        img.height
+      )
+      console.log(processedImage)
+      ctx.putImageData(processedImage, 0, 0)
+    }
+
+  </script>
+  </div>
 </body>
 
 </html>
